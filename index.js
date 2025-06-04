@@ -91,7 +91,7 @@ server.listen(process.env.PORT || 3978, () => {
 // Bot endpoint
 
 server.post('/api/messages', async (req, res) => {
-    console.log(`/api/messages ${req}`);
+    console.log(`/api/messages at ::${req}`);
       await adapter.processActivity(req, res, async (context) => {
         await bot.run(context);
       });
