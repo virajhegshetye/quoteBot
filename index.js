@@ -40,41 +40,37 @@ class QuotationBot extends ActivityHandler {
                 await synthesizer.speakTextAsync(message);
             }
 
+
             if (state.step === 'start') {
-                await sendAndSpeak('Hello! Please tell me your first name.');
+                await sendAndSpeak("Hi there! 👋 May I know your first name, please?");
                 state.step = 'firstName';
             } else if (state.step === 'firstName') {
                 state.data.name = context.activity.text;
-                await sendAndSpeak(`Got it, ${state.data.name}. Now, please tell me your monthly income?.`);
+                await sendAndSpeak(`Thanks, ${state.data.name}! 😊 Could you please share your monthly income with me?`);
                 state.step = 'income';
-            }
-            //   else if (state.step === 'lastName') {
-            //     state.data.lastName = context.activity.text;
-            //     await sendAndSpeak(`Thanks, ${state.data.lastName}. What is your monthly income?`);
-            //     state.step = 'income';
-            //   }
-            else if (state.step === 'income') {
+            } else if (state.step === 'income') {
                 state.data.income = parseFloat(context.activity.text);
-                const confirmationMessage = `Please confirm: First Name: ${state.data.name}, Monthly Income: $${state.data.income}. Say "yes" to confirm or "no" to restart.`;
+                const confirmationMessage = `Just to confirm, here's what I have:\n\n• First Name: ${state.data.name}\n• Monthly Income: $${state.data.income}\n\nDoes that look correct? Please reply with "yes" to confirm or "no" if you'd like to start over.`;
                 await sendAndSpeak(confirmationMessage);
                 state.step = 'confirm';
-            } else if (state.step === 'confirm') {
+            }
+            else if (state.step === 'confirm') {
                 if (context.activity.text.toLowerCase() === 'yes') {
                     try {
                         const response = await axios.post(`https://mock-quote-api-asgnetbfdhf6eqhn.southeastasia-01.azurewebsites.net/api/creditcard/apply`, state.data,
                             {
-                                headers: {
-                                  'Content-Type': 'application/json'
-                                }
-                              }
-                            );
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            }
+                        );
                         const status = response.data.decision;
                         await sendAndSpeak(`Your application has been ${status} for a card. Thank you!`);
                         state.step = 'start';
                         state.data = {};
                     } catch (error) {
-                        console.log(`error:::`,error);
-                        
+                        console.log(`error:::`, error);
+
                         await sendAndSpeak('Sorry, there was an error processing your request. Please try again.');
                     }
                 } else {
